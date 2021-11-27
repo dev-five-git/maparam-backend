@@ -11,13 +11,13 @@ from ..models.MaparamMember import MaparamMemberModel
 router = APIRouter()
 
 
-@router.post("/")
-def create_maparam_member(member: MaparamMember, db: Session = Depends(get_db)):
-    db_member = MaparamMemberModel(user_id=member.user_id, maparam=member.maparam, tier=1)
-    db.add(db_member)
-    db.commit()
-    db.refresh(db_member)
-    return db_member
+# @router.post("/")
+# def create_maparam_member(member: MaparamMember, db: Session = Depends(get_db)):
+#     db_member = MaparamMemberModel(user_id=member.user_id, maparam=member.maparam, tier=1)
+#     db.add(db_member)
+#     db.commit()
+#     db.refresh(db_member)
+#     return db_member
 
 
 @router.get("/{maparam_name}")
