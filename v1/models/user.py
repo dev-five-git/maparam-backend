@@ -13,6 +13,8 @@ class UserModel(Base):
     age = Column(Integer)
     hashtag = Column(Text)
     created_at = Column(DateTime, default=func.now())
+    introduce = Column(Text)
+    profile_img = Column(Text)
 
 
 UserModel.__table__.create(bind=engine, checkfirst=True)
