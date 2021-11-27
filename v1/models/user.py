@@ -7,7 +7,7 @@ from database import engine
 class UserModel(Base):
     __tablename__ = 'user'
     id = Column(String(16), primary_key=True)
-    name = Column(String(10))
+    name = Column(String(10), unique=True)
     pw = Column(String(64))
     email = Column(String(50))
     age = Column(Integer)
