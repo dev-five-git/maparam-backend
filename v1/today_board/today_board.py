@@ -1,5 +1,6 @@
 # Community
 import copy
+import json
 
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
@@ -56,4 +57,34 @@ def delete_board(index: int, db: Session = Depends(get_db)):
     a = copy.deepcopy(db_community.__dict__)
     db.delete(db_community)
     db.commit()
+    return a
+
+
+@router.get("/like/{index}")
+def add_like(index: int, user_id: str, db: Session = Depends(get_db)):
+    db_community = db.query(TodayBoardModel).filter(TodayBoardModel.index == index).one_or_none()
+    if db_community is None:
+        raise HTTPException(status_code=404, detail="Community not found")
+    if db_community.like:
+        like_list = json.loads(db_community.like)
+        if user_id not in like_list:
+            like_list.append(user_id)
+            a = "좋아요 +"
+            db_community.like = json.dumps(like_list)
+            db.add(db_community)
+            db.commit()
+        else:
+            like_list.remove(user_id)
+            a = "좋아요 -"
+            db_community.like = json.dumps(like_list)
+            db.add(db_community)
+            db.commit()
+
+    else:
+        like_list = [user_id]
+        a = "좋아요 +"
+        db_community.like = json.dumps(like_list)
+        db.add(db_community)
+        db.commit()
+
     return a
