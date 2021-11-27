@@ -1,4 +1,4 @@
-# Today Board
+# Timeline board
 import copy
 import json
 
@@ -7,14 +7,16 @@ from sqlalchemy.orm import Session
 
 from . import *
 from ..models import get_db
-from ..models.TodayBoard import TodayBoardModel
+from ..models.TimelineBoard import TimelineBoardModel
 
 router = APIRouter()
 
 
 @router.post("/")
-def create_board(board: TodayBoard, db: Session = Depends(get_db)):
-    db_board = TodayBoardModel(keyword=board.keyword, writer=board.writer, content=board.content, image=board.image)
+def create_board(board: TimelineBoard, db: Session = Depends(get_db)):
+    db_board = TimelineBoardModel(location_latitude=board.location_latitude,
+                                  location_longitude=board.location_longitude, writer=board.writer,
+                                  content=board.content, image=board.image)
     db.add(db_board)
     db.commit()
     db.refresh(db_board)
@@ -23,7 +25,7 @@ def create_board(board: TodayBoard, db: Session = Depends(get_db)):
 
 @router.get("/{index}")
 def get_board_by_index(index: int, db: Session = Depends(get_db)):
-    db_board = db.query(TodayBoardModel).filter(TodayBoardModel.index == index).one_or_none()
+    db_board = db.query(TimelineBoardModel).filter(TimelineBoardModel.index == index).one_or_none()
     if db_board is None:
         raise HTTPException(status_code=404, detail="board not found")
     return db_board
@@ -31,12 +33,12 @@ def get_board_by_index(index: int, db: Session = Depends(get_db)):
 
 @router.get("/")
 def get_board_pagination(page: int, limit: int = 20, db: Session = Depends(get_db)):
-    return db.query(TodayBoardModel).offset(limit * (page - 1)).limit(limit).all()
+    return db.query(TimelineBoardModel).offset(limit * (page - 1)).limit(limit).all()
 
 
 @router.put("/{index}")
-def update_board(index: int, board: UpdateTodayBoard, db: Session = Depends(get_db)):
-    db_board = db.query(TodayBoardModel).filter(TodayBoardModel.index == index).one_or_none()
+def update_board(index: int, board: UpdateTimelineBoard, db: Session = Depends(get_db)):
+    db_board = db.query(TimelineBoardModel).filter(TimelineBoardModel.index == index).one_or_none()
     if db_board is None:
         raise HTTPException(status_code=404, detail="board not found")
 
@@ -51,7 +53,7 @@ def update_board(index: int, board: UpdateTodayBoard, db: Session = Depends(get_
 
 @router.delete("/{index}")
 def delete_board(index: int, db: Session = Depends(get_db)):
-    db_board = db.query(TodayBoardModel).filter(TodayBoardModel.index == index).one_or_none()
+    db_board = db.query(TimelineBoardModel).filter(TimelineBoardModel.index == index).one_or_none()
     if db_board is None:
         raise HTTPException(status_code=404, detail="board not found")
     a = copy.deepcopy(db_board.__dict__)
@@ -62,7 +64,7 @@ def delete_board(index: int, db: Session = Depends(get_db)):
 
 @router.get("/like/{index}")
 def add_like(index: int, user_id: str, db: Session = Depends(get_db)):
-    db_board = db.query(TodayBoardModel).filter(TodayBoardModel.index == index).one_or_none()
+    db_board = db.query(TimelineBoardModel).filter(TimelineBoardModel.index == index).one_or_none()
     if db_board is None:
         raise HTTPException(status_code=404, detail="board not found")
     if db_board.like:
@@ -88,3 +90,19 @@ def add_like(index: int, user_id: str, db: Session = Depends(get_db)):
         db.commit()
 
     return a
+
+
+@router.post("/gps")
+def get_board_by_location(location: CurrentLocation, distance: int, page: int,
+                          limit: int = 20, db: Session = Depends(get_db)):
+    distance = distance / 1000
+    latitude = 0.00893655 * distance
+    longitude = 0.01065076 * distance
+    location_latitude = location.location_latitude
+    location_longitude = location.location_longitude
+    return db.query(TimelineBoardModel).filter(
+        (location_latitude - latitude <= TimelineBoardModel.location_latitude) & (
+                    TimelineBoardModel.location_latitude <= location_latitude + latitude) & (
+                    location_longitude - longitude <= TimelineBoardModel.location_longitude) & (
+                    TimelineBoardModel.location_longitude <= location_longitude + longitude)).offset(
+        limit * (page - 1)).limit(limit).all()
