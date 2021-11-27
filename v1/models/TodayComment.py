@@ -16,8 +16,8 @@ class TodayCommentModel(Base):
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
 
-    user = relationship(UserModel, backref=backref("today_comment", cascade="all,delete"))
-    board = relationship(TodayBoardModel, backref=backref("today_comment", cascade="all,delete"))
+    user = relationship(UserModel, backref=backref("today_board_comment", cascade="all,delete"))
+    board = relationship(TodayBoardModel, backref=backref("today_board_comment", cascade="all,delete"))
 
 
 TodayCommentModel.__table__.create(bind=engine, checkfirst=True)

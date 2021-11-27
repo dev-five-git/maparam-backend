@@ -63,4 +63,4 @@ def get_comment_by_board_index(index: int, db: Session = Depends(get_db)):
     db_board = db.query(TodayBoardModel).filter(TodayBoardModel.index == index).one_or_none()
     if db_board is None:
         raise HTTPException(status_code=404, detail="comment not found")
-    return db_board.today_comment
+    return db_board.today_board_comment
