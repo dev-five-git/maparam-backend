@@ -6,7 +6,6 @@ from pydantic import BaseModel
 class MaparamMember(BaseModel):
     user_id: str
     maparam: str
-    tier: int
 
     class Config:
         orm_mode = True

@@ -7,15 +7,22 @@ from sqlalchemy.orm import Session
 from . import *
 from ..models import get_db
 from ..models.Maparam import MaparamModel
+from ..models.MaparamMember import MaparamMemberModel
 
 router = APIRouter()
 
 
 @router.post("/")
 def create_maparam(maparam: Maparam, db: Session = Depends(get_db)):
+    db_maparam_search = db.query(MaparamModel).filter(MaparamModel.name == maparam.name).one_or_none()
+    if db_maparam_search:
+        raise HTTPException(status_code=404, detail="same name exist")
     db_maparam = MaparamModel(creater_id=maparam.creater_id, name=maparam.name, max_member_size=maparam.max_member_size,
                               introduce=maparam.introduce)
     db.add(db_maparam)
+    db.commit()
+    db_member = MaparamMemberModel(user_id=maparam.creater_id, maparam=maparam.name, tier=0)
+    db.add(db_member)
     db.commit()
     db.refresh(db_maparam)
     return db_maparam
