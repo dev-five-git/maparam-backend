@@ -29,12 +29,12 @@ def get_board_by_index(index: int, db: Session = Depends(get_db)):
 
 
 @router.get("/")
-def get_community_pagination(page: int, db: Session = Depends(get_db)):
-    return db.query(TodayBoardModel).offset(20 * (page - 1)).limit(20).all()
+def get_board_pagination(page: int, limit: int = 20, db: Session = Depends(get_db)):
+    return db.query(TodayBoardModel).offset(limit * (page - 1)).limit(limit).all()
 
 
 @router.put("/{index}")
-def update_community(index: int, community: UpdateTodayBoard, db: Session = Depends(get_db)):
+def update_board(index: int, community: UpdateTodayBoard, db: Session = Depends(get_db)):
     db_community = db.query(TodayBoardModel).filter(TodayBoardModel.index == index).one_or_none()
     if db_community is None:
         raise HTTPException(status_code=404, detail="Community not found")
@@ -49,7 +49,7 @@ def update_community(index: int, community: UpdateTodayBoard, db: Session = Depe
 
 
 @router.delete("/{index}")
-def delete_community(index: int, db: Session = Depends(get_db)):
+def delete_board(index: int, db: Session = Depends(get_db)):
     db_community = db.query(TodayBoardModel).filter(TodayBoardModel.index == index).one_or_none()
     if db_community is None:
         raise HTTPException(status_code=404, detail="Community not found")

@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship, backref
 
 from database import Base
 from database import engine
+from v1.models.TodayKeyword import TodayKeywordModel
 from v1.models.user import UserModel
 
 
@@ -18,6 +19,7 @@ class TodayBoardModel(Base):
     updated_at = Column(DateTime, onupdate=func.now())
 
     user = relationship(UserModel, backref=backref("today_board", cascade="all,delete"))
+    keyword_set = relationship(TodayKeywordModel, backref=backref("today_board"))
 
 
-UserModel.__table__.create(bind=engine, checkfirst=True)
+TodayBoardModel.__table__.create(bind=engine, checkfirst=True)
