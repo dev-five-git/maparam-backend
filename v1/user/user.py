@@ -25,7 +25,7 @@ bucket_name = 'maparam'
 #             "list": db.query(UserModel).offset(limit * (page - 1)).limit(limit).all()}
 
 
-@router.post("/create")
+@router.post("/")
 def create_user(user: User, db: Session = Depends(get_db)):
     db_user = db.query(UserModel).filter(UserModel.id == user.id).one_or_none()
     if db_user:
