@@ -93,8 +93,7 @@ def add_like(index: int, user_id: str, db: Session = Depends(get_db)):
 
 
 @router.post("/gps")
-def get_board_by_location(location: CurrentLocation, distance: int, page: int,
-                          limit: int = 20, db: Session = Depends(get_db)):
+def get_board_by_location(location: CurrentLocation, distance: int, db: Session = Depends(get_db)):
     distance = distance / 1000
     latitude = 0.00893655 * distance
     longitude = 0.01065076 * distance
@@ -102,7 +101,6 @@ def get_board_by_location(location: CurrentLocation, distance: int, page: int,
     location_longitude = location.location_longitude
     return db.query(TimelineBoardModel).filter(
         (location_latitude - latitude <= TimelineBoardModel.location_latitude) & (
-                    TimelineBoardModel.location_latitude <= location_latitude + latitude) & (
-                    location_longitude - longitude <= TimelineBoardModel.location_longitude) & (
-                    TimelineBoardModel.location_longitude <= location_longitude + longitude)).offset(
-        limit * (page - 1)).limit(limit).all()
+                TimelineBoardModel.location_latitude <= location_latitude + latitude) & (
+                location_longitude - longitude <= TimelineBoardModel.location_longitude) & (
+                TimelineBoardModel.location_longitude <= location_longitude + longitude)).all()
