@@ -4,7 +4,6 @@ from sqlalchemy.orm import relationship, backref
 from database import Base
 from database import engine
 from .TimelineBoard import TimelineBoardModel
-from .TodayBoard import TodayBoardModel
 from .user import UserModel
 
 
