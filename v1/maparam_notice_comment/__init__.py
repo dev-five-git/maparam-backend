@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class MaparamBoardComment(BaseModel):
+class MaparamNoticeComment(BaseModel):
     board_index: int
     writer: str
     content: str
@@ -12,7 +12,7 @@ class MaparamBoardComment(BaseModel):
         orm_mode = True
 
 
-class UpdateMaparamBoardComment(BaseModel):
+class UpdateMaparamNoticeComment(BaseModel):
     writer: Optional[str]
     content: Optional[str]
 
