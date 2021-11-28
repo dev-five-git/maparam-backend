@@ -13,8 +13,6 @@ class TodayBoardComment(BaseModel):
 
 
 class UpdateTodayBoardComment(BaseModel):
-    board_index: Optional[int]
-    writer: Optional[str]
     content: Optional[str]
 
     class Config:

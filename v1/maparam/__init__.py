@@ -14,7 +14,6 @@ class Maparam(BaseModel):
 
 
 class UpdateMaparam(BaseModel):
-    creater_id: Optional[str]
     name: Optional[str]
     max_member_size: Optional[int]
     introduce: Optional[str]

@@ -14,7 +14,6 @@ class MaparamBoard(BaseModel):
 
 
 class UpdateMaparamBoard(BaseModel):
-    maparam_name: Optional[str]
     writer: Optional[str]
     content: Optional[str]
     image: Optional[str]

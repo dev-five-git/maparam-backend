@@ -16,7 +16,6 @@ class TimelineBoard(BaseModel):
 
 
 class UpdateTimelineBoard(BaseModel):
-    writer: Optional[str]
     content: Optional[str]
     image: Optional[str]
     hashtag: Optional[str]

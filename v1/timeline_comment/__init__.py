@@ -13,8 +13,6 @@ class TimelineBoardComment(BaseModel):
 
 
 class UpdateTimelineBoardComment(BaseModel):
-    board_index: Optional[int]
-    writer: Optional[str]
     content: Optional[str]
 
     class Config:

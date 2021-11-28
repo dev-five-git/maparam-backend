@@ -14,8 +14,6 @@ class TodayBoard(BaseModel):
 
 
 class UpdateTodayBoard(BaseModel):
-    keyword: Optional[str]
-    writer: Optional[str]
     content: Optional[str]
     image: Optional[str]
 

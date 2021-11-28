@@ -13,7 +13,6 @@ class MaparamNoticeComment(BaseModel):
 
 
 class UpdateMaparamNoticeComment(BaseModel):
-    writer: Optional[str]
     content: Optional[str]
 
     class Config:
