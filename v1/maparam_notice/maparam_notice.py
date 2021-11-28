@@ -14,7 +14,7 @@ router = APIRouter()
 
 @router.post("/")
 def create_board(board: MaparamNotice, db: Session = Depends(get_db)):
-    db_board = MaparamNoticeModel(maparam_name=board.maparam_name, writer=board.writer,
+    db_board = MaparamNoticeModel(maparam_index=board.maparam_index, writer=board.writer,
                                   content=board.content, image=board.image)
     db.add(db_board)
     db.commit()

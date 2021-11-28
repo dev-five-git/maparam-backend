@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, func, Integer, Text, ForeignKey, Float, Numeric
+from sqlalchemy import Column, String, DateTime, func, Integer, Text, ForeignKey
 from sqlalchemy.orm import relationship, backref
 
 from database import Base
@@ -10,7 +10,7 @@ from v1.models.user import UserModel
 class MaparamBoardModel(Base):
     __tablename__ = 'maparam_board'
     index = Column(Integer, primary_key=True, autoincrement=True)
-    maparam_name = Column(String(20), ForeignKey('maparam.name'))
+    maparam_index = Column(Integer, ForeignKey('maparam.index'))
     writer = Column(String(16), ForeignKey('user.id'))
     content = Column(Text)
     image = Column(Text)

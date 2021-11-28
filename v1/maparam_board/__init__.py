@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class MaparamBoard(BaseModel):
-    maparam_name: str
+    maparam_index: int
     writer: str
     content: str
     image: str

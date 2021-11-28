@@ -11,12 +11,12 @@ class MaparamApplyModel(Base):
     __tablename__ = 'maparam_apply'
     index = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(String(16), ForeignKey('user.id'))
-    maparam = Column(String(20), ForeignKey('maparam.name'))
+    maparam_index = Column(Integer, ForeignKey('maparam.index'))
     status = Column(Integer)
     created_at = Column(DateTime, default=func.now())
 
     user = relationship(UserModel, backref=backref("maparam_apply", cascade="all,delete"))
-    maparam_to = relationship(MaparamModel, backref=backref("maparam_apply", cascade="all,delete"))
+    maparam = relationship(MaparamModel, backref=backref("maparam_apply", cascade="all,delete"))
 
 
 MaparamApplyModel.__table__.create(bind=engine, checkfirst=True)

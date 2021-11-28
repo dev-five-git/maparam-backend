@@ -13,7 +13,7 @@ router = APIRouter()
 
 @router.post("/")
 def create_maparam_apply(apply: MaparamApply, db: Session = Depends(get_db)):
-    db_apply = MaparamApplyModel(user_id=apply.user_id, maparam=apply.maparam, status=0)
+    db_apply = MaparamApplyModel(user_id=apply.user_id, maparam_index=apply.maparam_index, status=0)
     db.add(db_apply)
     db.commit()
     db.refresh(db_apply)
