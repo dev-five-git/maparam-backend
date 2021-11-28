@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from .maparam.maparam import router as maparam_router
 from .maparam_apply.maparam_apply import router as maparam_apply_router
 from .maparam_board.maparam_board import router as maparam_board_router
+from .maparam_board_comment.maparam_board_comment import router as maparam_board_comment_router
 from .maparam_member.maparam_member import router as maparam_member_router
 from .timeline_board.timeline_board import router as timeline_router
 from .timeline_comment.timeline_comment import router as timeline_comment_router
@@ -23,3 +24,4 @@ v1_router.include_router(maparam_router, prefix="/maparam", tags=["maparam"])
 v1_router.include_router(maparam_member_router, prefix="/maparam/member", tags=["maparam member"])
 v1_router.include_router(maparam_apply_router, prefix="/maparam/apply", tags=["maparam apply"])
 v1_router.include_router(maparam_board_router, prefix="/maparam/board", tags=["maparam board"])
+v1_router.include_router(maparam_board_comment_router, prefix="/maparam/board/comment", tags=["maparam board-comment"])
