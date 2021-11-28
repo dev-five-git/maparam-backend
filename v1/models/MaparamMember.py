@@ -11,7 +11,7 @@ class MaparamMemberModel(Base):
     __tablename__ = 'maparam_member'
     index = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(String(16), ForeignKey('user.id'))
-    maparam_index = Column(String(20), ForeignKey('maparam.index'))
+    maparam_index = Column(Integer, ForeignKey('maparam.index'))
     tier = Column(Integer)
     joined_at = Column(DateTime, default=func.now())
 
