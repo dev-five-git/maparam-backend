@@ -124,7 +124,6 @@ def add_user_profileimg(user_id: str, img: List[UploadFile] = File([]), db: Sess
         file.filename = name
     db_user.profile_img = img[0].filename
 
-
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
