@@ -5,7 +5,6 @@ from pydantic import BaseModel
 
 class TodayBoard(BaseModel):
     keyword: str
-    writer: str
     content: str
     image: str
 

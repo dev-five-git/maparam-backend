@@ -8,30 +8,36 @@ from sqlalchemy.orm import Session
 from . import *
 from ..models import get_db
 from ..models.TodayBoard import TodayBoardModel
+from ..models.user import UserModel
+from ..util import get_user_from_db
 
 router = APIRouter()
 
 
 @router.post("/")
-def create_board(board: TodayBoard, db: Session = Depends(get_db)):
-    db_board = TodayBoardModel(keyword=board.keyword, writer=board.writer, content=board.content, image=board.image)
+def create_board(board: TodayBoard, db: Session = Depends(get_db), user: UserModel = Depends(get_user_from_db)):
+    db_board = TodayBoardModel(keyword=board.keyword, writer=user.id, content=board.content, image=board.image)
     db.add(db_board)
     db.commit()
     db.refresh(db_board)
-    return db_board
+    return {"writer": db_board.user, "board": db_board}
 
 
-@router.get("/{index}")
+@router.get("/{index}", dependencies=[Depends(get_user_from_db)])
 def get_board_by_index(index: int, db: Session = Depends(get_db)):
     db_board = db.query(TodayBoardModel).filter(TodayBoardModel.index == index).one_or_none()
     if db_board is None:
         raise HTTPException(status_code=404, detail="board not found")
+    db_board.__dict__["user"] = db_board.user
     return db_board
 
 
-@router.get("/")
+@router.get("/", dependencies=[Depends(get_user_from_db)])
 def get_board_pagination(page: int, limit: int = 20, db: Session = Depends(get_db)):
-    return db.query(TodayBoardModel).offset(limit * (page - 1)).limit(limit).all()
+    a = db.query(TodayBoardModel).offset(limit * (page - 1)).limit(limit).all()
+    for i in a:
+        [i].append(i.user)
+    return a
 
 
 @router.put("/{index}")
