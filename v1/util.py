@@ -23,5 +23,3 @@ def get_user(db: Session, token: str):
         raise HTTPException(status_code=400, detail="로그인 토큰에 문제가 있습니다.")
     return user
 
-# 내가 쓴 게시물 확인
-# def
