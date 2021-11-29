@@ -17,4 +17,5 @@ def login(id: str = Body(...), pw: str = Body(...), db: Session = Depends(get_db
         raise HTTPException(status_code=404, detail="id not exist")
     if db_user.pw != pw:
         raise HTTPException(status_code=404, detail="pw not match")
+    del db_user.__dict__["pw"]
     return db_user
