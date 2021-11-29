@@ -6,7 +6,6 @@ from pydantic import BaseModel
 class TodayBoard(BaseModel):
     keyword: str
     content: str
-    image: str
 
     class Config:
         orm_mode = True
