@@ -26,7 +26,9 @@ def create_board(keyword: str = Form(...), content: str = Form(...), img: List[U
         # UploadFile 객체의 filename atr에 uuid에서 할당받은 name을 저장시킨다.
         file.filename = name
     db_board = TodayBoardModel(keyword=keyword, writer=user.id, content=content, image=img[0].filename)
+
     db_board.like = "[]"
+
     db.add(db_board)
     db.commit()
     db.refresh(db_board)
@@ -59,11 +61,14 @@ def get_board_pagination(page: int, limit: int = 20, db: Session = Depends(get_d
 
 
 @router.put("/{index}")
-def update_board(index: int, content: Optional[str] = Form(...), img: Optional[List[UploadFile]] = File(...),
+def update_board(index: int, content: Optional[str] = Form(...), img: Optional[List[UploadFile]] = File([]),
+                 user: UserModel = Depends(get_user_from_db),
                  db: Session = Depends(get_db)):
     db_board = db.query(TodayBoardModel).filter(TodayBoardModel.index == index).one_or_none()
     if db_board is None:
         raise HTTPException(status_code=404, detail="board not found")
+    if db_board.user.id != user.id:
+        raise HTTPException(status_code=404, detail="user not matched")
 
     if db_board.image:
         # s3에서 파일 삭제
@@ -82,6 +87,10 @@ def update_board(index: int, content: Optional[str] = Form(...), img: Optional[L
     db.add(db_board)
     db.commit()
     db.refresh(db_board)
+
+    db_board.__dict__["user"] = db_board.user
+    db_board.like = len(json.loads(db_board.like))
+
     return db_board
 
 
