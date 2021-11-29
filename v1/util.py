@@ -17,3 +17,4 @@ def get_user(db: Session, token: str):
     return user
 
 # 내가 쓴 게시물 확인
+# def
