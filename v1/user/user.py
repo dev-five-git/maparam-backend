@@ -117,6 +117,9 @@ def add_user_profileimg(user_id: str, img: List[UploadFile] = File([]), db: Sess
     if db_user is None:
         raise HTTPException(status_code=404, detail="id is None")
     # 이미지파일 서버로 전송
+
+    if db_user.profile_img:
+        s3.delete_object(Bucket=bucket_name, Key=db_user.profile_img)
     for file in img:
         name = str(uuid.uuid4()) + ".png"
         s3.upload_fileobj(file.file, bucket_name, name, ExtraArgs={'ACL': 'public-read'})
