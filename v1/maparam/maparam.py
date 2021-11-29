@@ -22,7 +22,7 @@ def create_maparam(maparam: Maparam, db: Session = Depends(get_db)):
     db.add(db_maparam)
     db.commit()
     db.refresh(db_maparam)
-    # 씨발 왜안되지...
+    # 씨발 왜안되지.....
     db_member = MaparamMemberModel(user_id=db_maparam.creater_id, maparam=db_maparam.index, tier=0)
     db.add(db_member)
     db.commit()
