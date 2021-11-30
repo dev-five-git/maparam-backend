@@ -8,6 +8,8 @@ from . import *
 from ..models import get_db
 from ..models.Maparam import MaparamModel
 from ..models.MaparamMember import MaparamMemberModel
+from ..models.user import UserModel
+from ..util import get_user_from_db
 
 router = APIRouter()
 
@@ -34,10 +36,19 @@ def create_maparam(maparam: Maparam, db: Session = Depends(get_db)):
 
 
 @router.get("/{index}")
-def get_maparam_by_index(index: int, db: Session = Depends(get_db)):
+def get_maparam_by_index(index: int, user: UserModel = Depends(get_user_from_db), db: Session = Depends(get_db)):
     db_maparam = db.query(MaparamModel).filter(MaparamModel.index == index).one_or_none()
     if db_maparam is None:
         raise HTTPException(status_code=404, detail="maparam not found")
+    chk_joined = db.query(MaparamMemberModel).filter((MaparamMemberModel.user_id == user.id) & (
+            MaparamMemberModel.maparam_index == index)).one_or_none()
+    if not chk_joined:
+        db_maparam.__dict__["tier"] = None
+    else:
+        if chk_joined.tier == 0:
+            db_maparam.__dict__["tier"] = 0
+        else:
+            db_maparam.__dict__["tier"] = 1
     return db_maparam
 
 
@@ -65,3 +76,19 @@ def delete_maparam(index: int, db: Session = Depends(get_db)):
     db.delete(db_maparam)
     db.commit()
     return a
+
+
+@router.get("/my/")
+def get_my_maparam(user: UserModel = Depends(get_user_from_db), db: Session = Depends(get_db)):
+    db_maparam = db.query(MaparamMemberModel).filter(MaparamMemberModel.user_id == user.id).all()
+    maparam_list = []
+    for i in db_maparam:
+        maparam_list.append(i.maparam)
+    if db_maparam is None:
+        raise HTTPException(status_code=404, detail="maparam not found")
+    return maparam_list
+
+
+@router.get("/search/{word}")
+def search_maparam(word: str, db: Session = Depends(get_db)):
+    return db.query(MaparamModel).filter(MaparamModel.name.like("%" + word + "%")).all()

@@ -13,6 +13,12 @@ router = APIRouter()
 
 @router.post("/")
 def create_maparam_apply(apply: MaparamApply, db: Session = Depends(get_db)):
+    a = db.query(MaparamMemberModel).filter(
+        (MaparamMemberModel.user_id == apply.user_id) & (
+                    MaparamMemberModel.maparam_index == apply.maparam_index)).one_or_none()
+    if a:
+        raise HTTPException(status_code=404, detail="already registered")
+
     db_apply = MaparamApplyModel(user_id=apply.user_id, maparam_index=apply.maparam_index, status=0)
     db.add(db_apply)
     db.commit()
@@ -20,9 +26,9 @@ def create_maparam_apply(apply: MaparamApply, db: Session = Depends(get_db)):
     return db_apply
 
 
-@router.get("/{maparam_name}")
-def get_apply_by_maparam(maparam_name: str, db: Session = Depends(get_db)):
-    db_apply = db.query(MaparamApplyModel).filter(MaparamApplyModel.maparam == maparam_name).all()
+@router.get("/{maparam_index}")
+def get_apply_by_maparam(maparam_index: str, db: Session = Depends(get_db)):
+    db_apply = db.query(MaparamApplyModel).filter(MaparamApplyModel.maparam_index == maparam_index).all()
     if db_apply is None:
         raise HTTPException(status_code=404, detail="apply not found")
     return db_apply

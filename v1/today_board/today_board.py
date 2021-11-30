@@ -18,7 +18,7 @@ router = APIRouter()
 
 
 @router.post("/")
-def create_board(keyword: str = Form(...), content: str = Form(...), img: List[UploadFile] = File([]),
+def create_board(keyword: str = Form(...), content: str = Form(None), img: List[UploadFile] = File([]),
                  db: Session = Depends(get_db),
                  user: UserModel = Depends(get_user_from_db)):
     for file in img:

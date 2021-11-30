@@ -20,9 +20,9 @@ router = APIRouter()
 #     return db_member
 
 
-@router.get("/{maparam_name}")
-def get_member_by_maparam(maparam_name: str, db: Session = Depends(get_db)):
-    db_member = db.query(MaparamMemberModel).filter(MaparamMemberModel.maparam == maparam_name).all()
+@router.get("/{maparam_index}")
+def get_member_by_maparam(maparam_index: int, db: Session = Depends(get_db)):
+    db_member = db.query(MaparamMemberModel).filter(MaparamMemberModel.maparam_index == maparam_index).all()
     if db_member is None:
         raise HTTPException(status_code=404, detail="member not found")
     return db_member

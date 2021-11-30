@@ -13,10 +13,3 @@ class MaparamBoard(BaseModel):
         orm_mode = True
 
 
-class UpdateMaparamBoard(BaseModel):
-    writer: Optional[str]
-    content: Optional[str]
-    image: Optional[str]
-
-    class Config:
-        orm_mode = True
