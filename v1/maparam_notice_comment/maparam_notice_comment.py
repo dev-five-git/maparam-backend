@@ -23,13 +23,13 @@ def create_board_comment(community_comment: MaparamNoticeComment, db: Session = 
     return db_community_comment
 
 
-@router.get("/{index}")
-def get_community_board_by_index(index: int, db: Session = Depends(get_db)):
-    db_community_comment = db.query(MaparamNoticeCommentModel).filter(
-        MaparamNoticeCommentModel.index == index).one_or_none()
-    if db_community_comment is None:
-        raise HTTPException(status_code=404, detail="Comment not found")
-    return db_community_comment
+# @router.get("/{index}")
+# def get_community_board_by_index(index: int, db: Session = Depends(get_db)):
+#     db_community_comment = db.query(MaparamNoticeCommentModel).filter(
+#         MaparamNoticeCommentModel.index == index).one_or_none()
+#     if db_community_comment is None:
+#         raise HTTPException(status_code=404, detail="Comment not found")
+#     return db_community_comment
 
 
 @router.put("/{index}")

@@ -24,7 +24,7 @@ def create_board(maparam_index: int = Form(...), content: str = Form(None), img:
                  user: UserModel = Depends(get_user_from_db)):
     chk_master = db.query(MaparamMemberModel).filter(
         (MaparamMemberModel.maparam_index == maparam_index) & (MaparamMemberModel.user_id == user.id) & (
-                MaparamMemberModel.tier == 0))
+                MaparamMemberModel.tier == 0)).one_or_none()
     if not chk_master:
         raise HTTPException(status_code=404, detail="user is not master at this maparam")
     for file in img:
@@ -138,4 +138,3 @@ def add_like(index: int, user_id: str, db: Session = Depends(get_db)):
         db.add(db_board)
         db.commit()
     return a
-
