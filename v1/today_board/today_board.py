@@ -8,7 +8,7 @@ from fastapi import Depends, APIRouter, HTTPException, Form, UploadFile, File
 from sqlalchemy.orm import Session
 
 from . import *
-from ..awskey import bucket_name, s3
+from ..awskeys import s3, bucket_name
 from ..models import get_db
 from ..models.TodayBoard import TodayBoardModel
 from ..models.user import UserModel
@@ -52,17 +52,23 @@ def get_board_by_index(index: int, db: Session = Depends(get_db)):
     return db_board
 
 
-@router.get("/", dependencies=[Depends(get_user_from_db)])
-def get_board_pagination(page: int, limit: int = 20, db: Session = Depends(get_db)):
-    a = db.query(TodayBoardModel).offset(limit * (page - 1)).limit(limit).all()
+@router.get("/")
+def get_board_pagination(keyword: str, page: int, limit: int = 20, user: UserModel = Depends(get_user_from_db),
+                         db: Session = Depends(get_db)):
+    a = db.query(TodayBoardModel).filter(TodayBoardModel.keyword == keyword).offset(limit * (page - 1)).limit(
+        limit).all()
     for i in a:
+        if i.writer == user.id:
+            i.__dict__["my_board"] = True
+        else:
+            i.__dict__["my_board"] = False
         [i].append(i.user)
         i.like = len(json.loads(i.like))
     return a
 
 
 @router.put("/{index}")
-def update_board(index: int, content: Optional[str] = Form(...), img: Optional[List[UploadFile]] = File([]),
+def update_board(index: int, content: Optional[str] = Form(None), img: Optional[List[UploadFile]] = File([]),
                  user: UserModel = Depends(get_user_from_db),
                  db: Session = Depends(get_db)):
     db_board = db.query(TodayBoardModel).filter(TodayBoardModel.index == index).one_or_none()

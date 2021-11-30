@@ -8,17 +8,18 @@ from fastapi import Depends, APIRouter, HTTPException, Form, UploadFile, File
 from sqlalchemy.orm import Session
 
 from . import *
+from ..awskeys import bucket_name, s3
 from ..models import get_db
 from ..models.TimelineBoard import TimelineBoardModel
 from ..models.user import UserModel
-from ..util import s3, bucket_name, get_user_from_db
+from ..util import get_user_from_db
 
 router = APIRouter()
 
 
 @router.post("/")
-def create_board(location_latitude: str = Form(...), location_longitude: str = Form(...), writer: str = Form(...),
-                 hashtag: str = Form(None), content: str = Form(None), img: List[UploadFile] = File([]),
+def create_board(location_latitude: str = Form(None), location_longitude: str = Form(None), writer: str = Form(None),
+                 content: str = Form(None), img: List[UploadFile] = File([]),
                  db: Session = Depends(get_db)):
     for file in img:
         name = str(uuid.uuid4()) + ".png"
@@ -28,7 +29,7 @@ def create_board(location_latitude: str = Form(...), location_longitude: str = F
 
     db_board = TimelineBoardModel(location_latitude=location_latitude,
                                   location_longitude=location_longitude, writer=writer,
-                                  content=content, image=img[0].filename)
+                                  content=content, image=img[0].filename if img else None)
     db_board.like = "[]"
 
     db.add(db_board)
@@ -53,16 +54,21 @@ def get_board_by_index(index: int, db: Session = Depends(get_db)):
 
 
 @router.get("/")
-def get_board_pagination(page: int, limit: int = 20, db: Session = Depends(get_db)):
+def get_board_pagination(page: int, limit: int = 20, user: UserModel = Depends(get_user_from_db),
+                         db: Session = Depends(get_db)):
     a = db.query(TimelineBoardModel).offset(limit * (page - 1)).limit(limit).all()
     for i in a:
+        if i.writer == user.id:
+            i.__dict__["my_board"] = True
+        else:
+            i.__dict__["my_board"] = False
         [i].append(i.user)
         i.like = len(json.loads(i.like))
     return a
 
 
 @router.put("/{index}")
-def update_board(index: int, hashtag: Optional[str] = Form(None), content: Optional[str] = Form(None),
+def update_board(index: int, content: Optional[str] = Form(None),
                  img: Optional[List[UploadFile]] = File([]), user: UserModel = Depends(get_user_from_db),
                  db: Session = Depends(get_db)):
     db_board = db.query(TimelineBoardModel).filter(TimelineBoardModel.index == index).one_or_none()

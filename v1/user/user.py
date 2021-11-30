@@ -7,9 +7,9 @@ from fastapi import Depends, APIRouter, HTTPException, Body, UploadFile, File
 from sqlalchemy.orm import Session
 
 from . import *
+from ..awskeys import bucket_name, s3
 from ..models import get_db
 from ..models.user import UserModel
-from ..util import s3, bucket_name
 
 router = APIRouter()
 

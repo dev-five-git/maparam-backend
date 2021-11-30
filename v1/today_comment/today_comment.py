@@ -23,12 +23,12 @@ def create_comment(comment: TodayBoardComment, db: Session = Depends(get_db)):
     return db_comment
 
 
-@router.get("/{index}")
-def get_comment_by_index(index: int, db: Session = Depends(get_db)):
-    db_comment = db.query(TodayCommentModel).filter(TodayCommentModel.index == index).one_or_none()
-    if db_comment is None:
-        raise HTTPException(status_code=404, detail="Comment not found")
-    return db_comment
+# @router.get("/{index}")
+# def get_comment_by_index(index: int, db: Session = Depends(get_db)):
+#     db_comment = db.query(TodayCommentModel).filter(TodayCommentModel.index == index).one_or_none()
+#     if db_comment is None:
+#         raise HTTPException(status_code=404, detail="Comment not found")
+#     return db_comment
 
 
 @router.put("/{index}")

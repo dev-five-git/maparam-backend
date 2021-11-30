@@ -8,11 +8,12 @@ from fastapi import Depends, APIRouter, HTTPException, Form, UploadFile, File
 from sqlalchemy.orm import Session
 
 from . import *
+from ..awskeys import s3, bucket_name
 from ..models import get_db
 from ..models.MaparamBoard import MaparamBoardModel
 from ..models.MaparamMember import MaparamMemberModel
 from ..models.user import UserModel
-from ..util import get_user_from_db, s3, bucket_name
+from ..util import get_user_from_db
 
 router = APIRouter()
 
