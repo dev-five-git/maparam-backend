@@ -25,7 +25,7 @@ def create_board(keyword: str = Form(...), content: str = Form(...), img: List[U
         s3.upload_fileobj(file.file, bucket_name, name, ExtraArgs={'ACL': 'public-read'})
         # UploadFile 객체의 filename atr에 uuid에서 할당받은 name을 저장시킨다.
         file.filename = name
-    db_board = TodayBoardModel(keyword=keyword, writer=user.id, content=content, image=img[0].filename)
+    db_board = TodayBoardModel(keyword=keyword, writer=user.id, content=content, image=img[0].filename if img else None)
 
     db_board.like = "[]"
 
