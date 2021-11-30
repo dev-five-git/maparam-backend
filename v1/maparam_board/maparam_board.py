@@ -48,10 +48,15 @@ def create_board(maparam_index: int = Form(...), content: str = Form(None), img:
 
 
 @router.get("/{index}")
-def get_board_by_index(index: int, db: Session = Depends(get_db)):
+def get_board_by_index(index: int, user: UserModel = Depends(get_user_from_db), db: Session = Depends(get_db)):
     db_board = db.query(MaparamBoardModel).filter(MaparamBoardModel.index == index).one_or_none()
     if db_board is None:
         raise HTTPException(status_code=404, detail="board not found")
+
+    if db_board.writer == user.id:
+        db_board.__dict__["my_board"] = True
+    else:
+        db_board.__dict__["my_board"] = False
 
     db_board.__dict__["user"] = db_board.user
     db_board.like = len(json.loads(db_board.like))
