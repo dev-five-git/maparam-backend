@@ -8,6 +8,9 @@ from . import *
 from ..models import get_db
 from ..models.MaparamBoardComment import MaparamBoardCommentModel
 from ..models.MaparamBoard import MaparamBoardModel
+from ..models.user import UserModel
+from ..notification.notification import create_noti
+
 router = APIRouter()
 
 
@@ -16,6 +19,13 @@ def create_board_comment(community_comment: MaparamBoardComment, db: Session = D
     db_community_comment = MaparamBoardCommentModel(board_index=community_comment.board_index,
                                                     writer=community_comment.writer,
                                                     content=community_comment.content)
+    # 알림 생성
+    db_board = db.query(MaparamBoardModel).filter(
+        MaparamBoardModel.index == community_comment.board_index).one_or_none()
+    comment_writer_name = db.query(UserModel).filter(UserModel.id == community_comment.writer).one_or_none().name
+    if db_board.writer != community_comment.writer:
+        create_noti(db, db_board.writer, "마파람 \"" + db_board.maparam.name + "\"", comment_writer_name)
+
     db.add(db_community_comment)
     db.commit()
     db.refresh(db_community_comment)

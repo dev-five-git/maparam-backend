@@ -6,8 +6,10 @@ from sqlalchemy.orm import Session
 
 from . import *
 from ..models import get_db
-from ..models.MaparamNoticeComment import MaparamNoticeCommentModel
 from ..models.MaparamNotice import MaparamNoticeModel
+from ..models.MaparamNoticeComment import MaparamNoticeCommentModel
+from ..models.user import UserModel
+from ..notification.notification import create_noti
 
 router = APIRouter()
 
@@ -15,8 +17,16 @@ router = APIRouter()
 @router.post("/")
 def create_board_comment(community_comment: MaparamNoticeComment, db: Session = Depends(get_db)):
     db_community_comment = MaparamNoticeCommentModel(board_index=community_comment.board_index,
-                                                    writer=community_comment.writer,
-                                                    content=community_comment.content)
+                                                     writer=community_comment.writer,
+                                                     content=community_comment.content)
+
+    # 알림 생성
+    db_board = db.query(MaparamNoticeModel).filter(
+        MaparamNoticeModel.index == community_comment.board_index).one_or_none()
+    comment_writer_name = db.query(UserModel).filter(UserModel.id == community_comment.writer).one_or_none().name
+    if db_board.writer != community_comment.writer:
+        create_noti(db, db_board.writer, "마파람 \"" + db_board.maparam.name + "\" 공지사항", comment_writer_name)
+
     db.add(db_community_comment)
     db.commit()
     db.refresh(db_community_comment)

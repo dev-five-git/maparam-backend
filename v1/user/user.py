@@ -2,18 +2,19 @@
 import uuid
 from typing import List
 
-import boto3 as boto3
 from fastapi import Depends, APIRouter, HTTPException, Body, UploadFile, File
 from sqlalchemy.orm import Session
 
 from . import *
 from ..awskeys import bucket_name, s3
 from ..models import get_db
+from ..models.TimelineBoard import TimelineBoardModel
+from ..models.TimelineComment import TimelineCommentModel
+from ..models.TodayBoard import TodayBoardModel
+from ..models.TodayComment import TodayCommentModel
 from ..models.user import UserModel
 
 router = APIRouter()
-
-
 
 
 # @router.get("/page", dependencies=[Depends(check_admin)])
@@ -130,3 +131,17 @@ def add_user_profileimg(user_id: str, img: List[UploadFile] = File([]), db: Sess
     db.refresh(db_user)
     del db_user.__dict__["pw"]
     return db_user
+
+
+@router.get("/profile/{user_id}")
+def get_activate_log_by_id(user_id: str, db: Session = Depends(get_db)):
+    db_user = db.query(UserModel).filter(UserModel.id == user_id).one_or_none()
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    count_today_keyword = db.query(TodayBoardModel).filter(TodayBoardModel.writer == user_id).count()
+    count_today_keyword_comment = db.query(TodayCommentModel).filter(TodayCommentModel.writer == user_id).count()
+    count_timeline = db.query(TimelineBoardModel).filter(TimelineBoardModel.writer == user_id).count()
+    count_timeline_comment = db.query(TimelineCommentModel).filter(TimelineCommentModel.writer == user_id).count()
+
+    return {"count_today_keyword": count_today_keyword, "count_today_keyword_comment": count_today_keyword_comment,
+            "count_timeline": count_timeline, "count_timeline_comment": count_timeline_comment}

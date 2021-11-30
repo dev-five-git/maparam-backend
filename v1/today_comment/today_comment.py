@@ -8,6 +8,8 @@ from . import *
 from ..models import get_db
 from ..models.TodayBoard import TodayBoardModel
 from ..models.TodayComment import TodayCommentModel
+from ..models.user import UserModel
+from ..notification.notification import create_noti
 
 router = APIRouter()
 
@@ -15,8 +17,14 @@ router = APIRouter()
 @router.post("/")
 def create_comment(comment: TodayBoardComment, db: Session = Depends(get_db)):
     db_comment = TodayCommentModel(board_index=comment.board_index,
-                                             writer=comment.writer,
-                                             content=comment.content)
+                                   writer=comment.writer,
+                                   content=comment.content)
+    # 알림 생성
+    db_board = db.query(TodayBoardModel).filter(TodayBoardModel.index == comment.board_index).one_or_none()
+    comment_writer_name = db.query(UserModel).filter(UserModel.id == comment.writer).one_or_none().name
+    if db_board.writer != comment.writer:
+        create_noti(db, db_board.writer, "오늘의 키워드 \"" + db_board.keyword + "\"", comment_writer_name)
+
     db.add(db_comment)
     db.commit()
     db.refresh(db_comment)
