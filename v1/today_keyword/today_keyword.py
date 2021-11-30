@@ -35,3 +35,11 @@ def delete_user_by_keyword(keyword: str, db: Session = Depends(get_db)):
     db.query(TodayKeywordModel).filter(TodayKeywordModel.keyword == keyword).delete()
     db.commit()
     return keyword
+
+
+@router.get("/recent")
+def get_keyword_recent(db: Session = Depends(get_db)):
+    db_keyword = db.query(TodayKeywordModel).order_by(TodayKeywordModel.date.desc()).first()
+    if db_keyword is None:
+        raise HTTPException(status_code=404, detail="keyword not found")
+    return db_keyword
