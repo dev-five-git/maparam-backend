@@ -10,6 +10,7 @@ from ..models.MaparamBoardComment import MaparamBoardCommentModel
 from ..models.MaparamBoard import MaparamBoardModel
 from ..models.user import UserModel
 from ..notification.notification import create_noti
+from ..util import get_user_from_db
 
 router = APIRouter()
 
@@ -68,8 +69,15 @@ def delete_board_comment(index: int, db: Session = Depends(get_db)):
 
 #
 @router.get("/{index}/comment")
-def get_comment_by_board_index(index: int, db: Session = Depends(get_db)):
+def get_comment_by_board_index(index: int, user: UserModel = Depends(get_user_from_db), db: Session = Depends(get_db)):
     db_community = db.query(MaparamBoardModel).filter(MaparamBoardModel.index == index).one_or_none()
     if db_community is None:
         raise HTTPException(status_code=404, detail="comment not found")
+
+    for i in db_community.maparam_board_comment:
+        if i.writer == user.id:
+            i.__dict__["my_comment"] = True
+        else:
+            i.__dict__["my_comment"] = False
+
     return db_community.maparam_board_comment
