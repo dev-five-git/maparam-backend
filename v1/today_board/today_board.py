@@ -69,7 +69,7 @@ def get_board_pagination(keyword: str, page: int, limit: int = 20, user: UserMod
             i.__dict__["my_board"] = False
         [i].append(i.user)
         i.like = len(json.loads(i.like))
-    return a
+    return {"board_list":a}
 
 
 @router.put("/{index}")

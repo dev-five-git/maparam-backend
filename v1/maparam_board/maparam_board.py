@@ -76,7 +76,7 @@ def get_board_pagination(maparam_index: int, page: int, limit: int = 20, user: U
             i.__dict__["my_board"] = False
         [i].append(i.user)
         i.like = len(json.loads(i.like))
-    return a
+    return {"board_list":a}
 
 
 @router.put("/{index}")

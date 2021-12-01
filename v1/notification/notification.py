@@ -11,8 +11,8 @@ router = APIRouter()
 
 @router.get("/")
 def get_user_notification(user: UserModel = Depends(get_user_from_db), db: Session = Depends(get_db)):
-    return db.query(NotificationModel).filter(
-        (NotificationModel.user_id == user.id) & (NotificationModel.checked == False)).all()
+    return {"noti_list": db.query(NotificationModel).filter(
+        (NotificationModel.user_id == user.id) & (NotificationModel.checked == False)).all()}
 
 
 @router.get("/{index}")

@@ -31,7 +31,7 @@ def get_apply_by_maparam(maparam_index: str, db: Session = Depends(get_db)):
     db_apply = db.query(MaparamApplyModel).filter(MaparamApplyModel.maparam_index == maparam_index).all()
     if db_apply is None:
         raise HTTPException(status_code=404, detail="apply not found")
-    return db_apply
+    return {"apply":db_apply}
 
 
 @router.put("/{index}")

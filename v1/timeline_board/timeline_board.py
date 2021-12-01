@@ -69,7 +69,7 @@ def get_board_pagination(page: int, limit: int = 20, user: UserModel = Depends(g
             i.__dict__["my_board"] = False
         [i].append(i.user)
         i.like = len(json.loads(i.like))
-    return a
+    return {"board_list": a}
 
 
 @router.put("/{index}")
@@ -154,4 +154,4 @@ def get_board_by_location(location: CurrentLocation, distance: int, db: Session 
     for i in a:
         [i].append(i.user)
         i.like = len(json.loads(i.like))
-    return a
+    return {"board_list":a}

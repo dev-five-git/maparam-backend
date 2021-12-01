@@ -86,7 +86,7 @@ def get_my_maparam(user: UserModel = Depends(get_user_from_db), db: Session = De
         maparam_list.append(i.maparam)
     if db_maparam is None:
         raise HTTPException(status_code=404, detail="maparam not found")
-    return maparam_list
+    return {"db_maparam":maparam_list}
 
 
 @router.get("/search/{word}")

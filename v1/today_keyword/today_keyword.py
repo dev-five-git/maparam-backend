@@ -24,7 +24,7 @@ def get_keyword_all(db: Session = Depends(get_db)):
     db_keyword = db.query(TodayKeywordModel).all()
     if db_keyword is None:
         raise HTTPException(status_code=404, detail="keyword not found")
-    return db_keyword
+    return {"key_word_list": db_keyword}
 
 
 @router.delete("/{keyword}")
